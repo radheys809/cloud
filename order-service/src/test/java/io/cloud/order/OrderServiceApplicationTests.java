@@ -5,29 +5,20 @@ import io.cloud.order.dto.TransactionRequest;
 import io.cloud.order.model.Order;
 import io.cloud.order.model.Status;
 import io.cloud.order.repository.OrderRepository;
-import io.cloud.order.resources.OrderController;
 import io.cloud.order.service.OrderService;
-import org.assertj.core.api.Assertions;
-import org.junit.Before;
+import io.cloud.order.utils.UtilityClass;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springdoc.core.SpringDocConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doReturn;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -39,13 +30,9 @@ class OrderServiceApplicationTests {
 
     @MockBean
     OrderRepository orderRepository;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    UtilityClass utilityClass1 = new UtilityClass();
 
 
-    }
     @Test
     void contextLoads() {
     }
@@ -53,15 +40,27 @@ class OrderServiceApplicationTests {
     @Test
     final void createOrderThenSuccessTest() {
 
-        Order order =new Order();
+        Order order = new Order();
         order.setOrderId("1284994");
         order.setOrderStatus(Status.PENDING);
-        Mono<Order> orderMono= Mono.just(order);
+        Mono<Order> orderMono = Mono.just(order);
         when(orderRepository.save(new Order())).thenReturn(orderMono);
-        Mono<Order> returnedValue=orderService.createOrder(new TransactionRequest(new Order(),new Payment()));
-      System.out.println(returnedValue.block());
-        Assertions.assertThat(returnedValue)
+        Mono<Order> returnedValue = orderService.createOrder(new TransactionRequest(new Order(), new Payment()));
+        System.out.println(returnedValue.block());
+        assertThat(returnedValue)
                 .isEqualTo(orderMono);
+    }
 
+    @Test
+    final void testStaticMethodsMock() {
+        try (MockedStatic<UtilityClass> utilityClassMock = Mockito.mockStatic(
+                UtilityClass.class
+        )) {
+            utilityClass1.setClassName("Test");
+            utilityClass1.setAuthor("Radhey");
+            utilityClassMock.when((MockedStatic.Verification) UtilityClass.getInstance()).thenReturn(utilityClass1);
+            assertThat(UtilityClass.getInstance()).isEqualTo(utilityClass1);
+
+        }
     }
 }
