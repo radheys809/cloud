@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Mono;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -62,5 +63,34 @@ class OrderServiceApplicationTests {
             assertThat(UtilityClass.getInstance()).isEqualTo(utilityClass1);
 
         }
+    }
+    @Test
+    final void becameCoder() {
+        try {
+            while (true) {
+                learn();
+                eat();
+                sleep(8);
+                repeat();
+            }
+        } catch (NullPointerException npe) {
+            fail("Yes You are a coder, but need some improvement");
+        } catch (Exception e) {
+            System.err.println("No you are not! but you can be");
+        }
+    }
+
+    private void sleep(int hours) throws InterruptedException {
+        Thread.sleep(hours);
+    }
+
+    private void repeat() {
+    }
+
+    private void eat() {
+
+    }
+
+    private void learn() {
     }
 }
